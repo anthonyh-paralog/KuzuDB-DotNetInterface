@@ -1,0 +1,61 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>KuzuDB</AssemblyName>
+    <RootNamespace>KuzuDB</RootNamespace>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageId>KuzuDB.NET</PackageId>
+    <Title>KuzuDB for .NET</Title>
+    <Version>0.0.2</Version>
+    <PackageOutputPath>$(OutputPath)</PackageOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="swigwintools" Version="4.2.0">
+      <GeneratePathProperty>True</GeneratePathProperty>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="generated\" />
+    <Folder Include="libkuzu\" />
+    <Folder Include="lib\" />
+    <Folder Include="pkg\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="kuzunet.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="kuzu_shared.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="runtimes\win-x64\native\kuzunet.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="runtimes\win-x64\native\kuzu_shared.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="call run_swig.bat $(Pkgswigwintools)\tools\swigwin-4.2.0\swig.exe&#xD;&#xA;call build_wrapper.bat cmake" />
+  </Target>
+
+  <!-- Must be run after build so output assembly is in runtimes/ -->
+  <Target Name="Runtimes" AfterTargets="Build">
+    <ItemGroup>
+      <Content Include="runtimes\**">
+        <PackagePath>runtimes</PackagePath>
+        <Visible>false</Visible>
+      </Content>
+      <!-- <Content Include="build\**"> 
+        <PackagePath>build</PackagePath>
+      </Content>-->
+    </ItemGroup>
+  </Target>
+  
+</Project>
